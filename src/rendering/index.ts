@@ -95,8 +95,8 @@ export class Renderer {
         });
     }
 
-    onMouseDown(x: number, y: number) {}
-    onMouseMove(x: number, y: number) {}
+    onMouseDown(_x: number, _y: number) {}
+    onMouseMove(_x: number, _y: number) {}
     onMouseUp() {}
     onMouseLeave() {}
 }
