@@ -1,6 +1,5 @@
 import { Vector2 } from "./maths";
 import { NodeSimulation } from "./nodes";
-import { ProjectileSimulation } from "./projectiles";
 import { Node, Projectile } from "./types";
 
 const BACKGROUND = "#0a091a";
@@ -86,7 +85,6 @@ export class Renderer {
             this.ctx.stroke();
         });
 
-        this.ctx.lineWidth = 0.5;
         nodes.forEach((node) => {
             // Background
             this.ctx.fillStyle = BACKGROUND;
@@ -103,19 +101,8 @@ export class Renderer {
 
             this.ctx.fillStyle = WHITE;
 
-            // Inner Circle
-            this.ctx.beginPath();
-            this.ctx.arc(
-                node.position.x + this.VIEWPORT.x / 2,
-                node.position.y + this.VIEWPORT.y / 2,
-                5,
-                0,
-                2 * Math.PI
-            );
-            this.ctx.fill();
-            this.ctx.closePath();
-
             // Outer Ring
+            this.ctx.lineWidth = 0.5;
             this.ctx.beginPath();
             this.ctx.arc(
                 node.position.x + this.VIEWPORT.x / 2,
@@ -124,6 +111,18 @@ export class Renderer {
                 0,
                 2 * Math.PI
             );
+            this.ctx.stroke();
+            this.ctx.closePath();
+
+            // Inner Circle
+            this.ctx.beginPath();
+            this.ctx.lineWidth = 4;
+            this.ctx.moveTo(node.position.x + this.VIEWPORT.x / 2 - 6, node.position.y + this.VIEWPORT.y / 2);
+            this.ctx.lineTo(node.position.x + this.VIEWPORT.x / 2 + 6, node.position.y + this.VIEWPORT.y / 2);
+            if (node.type === "source") {
+                this.ctx.moveTo(node.position.x + this.VIEWPORT.x / 2, node.position.y + this.VIEWPORT.y / 2 + 6);
+                this.ctx.lineTo(node.position.x + this.VIEWPORT.x / 2, node.position.y + this.VIEWPORT.y / 2 - 6);
+            }
             this.ctx.stroke();
             this.ctx.closePath();
         });
@@ -143,11 +142,7 @@ export class Renderer {
     onMouseLeave() {}
 }
 
-export const addInteractivityToRenderer = (
-    renderer: Renderer,
-    nodes: NodeSimulation,
-    projectiles: ProjectileSimulation
-) => {
+export const addInteractivityToRenderer = (renderer: Renderer, nodes: NodeSimulation) => {
     let selection: { node: number; x: number; y: number; moved: boolean } | null = null;
     renderer.onMouseDown = (x, y, event) => {
         const { index, node } = nodes.getNodeAtPoint({ x, y });
