@@ -6,17 +6,11 @@ export class Simulation {
     public projectiles: Projectile[];
     public config: SimulationConfig;
 
-    constructor(
-        nodes: Node[],
-        node_radius: number,
-        bounds: Vector2,
-        config?: Partial<Exclude<SimulationConfig, "node_radius">>
-    ) {
+    constructor(nodes: Node[], bounds: Vector2, config?: Partial<Exclude<SimulationConfig, "node_radius">>) {
         this.nodes = nodes;
         this.projectiles = [];
         this.config = {
             force_constant: 20000000,
-            node_radius,
             drag: 0.0002,
             node_period: 0.002,
             bounds,
@@ -32,7 +26,7 @@ export class Simulation {
 
             while (node.lapsed > this.config.node_period) {
                 this.projectiles.push({
-                    position: add(node.position, getRandomVector2(this.config.node_radius)),
+                    position: add(node.position, getRandomVector2(20)),
                     velocity: ZERO,
                 });
 
@@ -60,7 +54,7 @@ export class Simulation {
             const update = add(projectile.position, scale(projectile.velocity, dt));
 
             if (
-                this.nodes.some((node) => length(subtract(node.position, update)) < this.config.node_radius) ||
+                this.nodes.some((node) => length(subtract(node.position, update)) < 20) ||
                 Math.abs(update.x) > this.config.bounds.x ||
                 Math.abs(update.y) > this.config.bounds.y
             )

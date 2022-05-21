@@ -13,7 +13,6 @@ export interface Projectile {
 
 export interface SimulationConfig {
     force_constant: number;
-    node_radius: number;
     drag: number;
     node_period: number;
     bounds: Vector2;
