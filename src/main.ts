@@ -40,3 +40,6 @@ const getAnimationFrame = (timestamp: number) => {
 };
 
 window.requestAnimationFrame(getAnimationFrame);
+
+(window as any).renderer = renderer;
+(window as any).simulation = simulation;
