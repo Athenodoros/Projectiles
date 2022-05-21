@@ -11,7 +11,7 @@ export class Simulation {
         this.nodes = nodes;
         this.projectiles = [];
         this.config = {
-            force_constant: 5000000,
+            force_constant: 3000000,
             drag: 0.01,
             node_period: 0.002,
             bounds,
@@ -45,7 +45,7 @@ export class Simulation {
                     const difference = subtract(node.position, projectile.position);
                     const strength = this.config.force_constant / Math.pow(norm(difference), 2);
                     const polarity = node.type === "sink" ? 1 : -1;
-                    return scale(unit(difference), strength * polarity);
+                    return scale(unit(difference), Math.min(5000, strength) * polarity);
                 })
                 .reduce(add, ZERO);
 
