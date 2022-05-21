@@ -46,7 +46,7 @@ export class Simulation {
                     const difference = subtract(node.position, projectile.position);
                     const strength = this.config.force_constant / Math.pow(norm(difference), 2);
                     const polarity = node.type === "sink" ? 1 : -1;
-                    return scale(unit(difference), Math.min(5000, strength) * polarity);
+                    return scale(unit(difference), Math.min(3000, strength) * polarity);
                 })
                 .reduce(add, ZERO);
 
@@ -78,5 +78,15 @@ export class Simulation {
         }
 
         node.position = position;
+    }
+
+    flipNodePolarity(id: string) {
+        const node = this.nodes.find((node) => node.id === id);
+        if (!node) {
+            console.warn(`Node "${id}" not found`);
+            return;
+        }
+
+        node.type = node.type === "sink" ? "source" : "sink";
     }
 }

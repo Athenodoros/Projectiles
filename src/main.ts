@@ -18,16 +18,21 @@ const simulation = new Simulation(
 );
 
 // Interactivity
-let selection: { node: string; x: number; y: number } | null = null;
+let selection: { node: string; x: number; y: number; moved: boolean } | null = null;
 renderer.onMouseDown = (x, y) => {
     const node = simulation.nodes.find((node) => distance(node.position, { x, y }) < NODE_RADIUS);
-    if (node) selection = { node: node.id, x: x - node.position.x, y: y - node.position.y };
+    if (node) selection = { node: node.id, x: x - node.position.x, y: y - node.position.y, moved: false };
 };
-renderer.onMouseUp = () => (selection = null);
+renderer.onMouseUp = () => {
+    if (selection && !selection.moved) simulation.flipNodePolarity(selection.node);
+
+    selection = null;
+};
 renderer.onMouseLeave = () => (selection = null);
 renderer.onMouseMove = (x, y) => {
     if (!selection) return;
 
+    selection.moved = true;
     simulation.updateNodePosition(selection.node, { x: x - selection.x, y: y - selection.y });
 };
 

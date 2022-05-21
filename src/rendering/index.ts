@@ -26,6 +26,7 @@ export class Renderer {
         // Event Handlers
         const getLocalX = (event: MouseEvent) => event.clientX - this.VIEWPORT.x / 2;
         const getLocalY = (event: MouseEvent) => event.clientY - this.VIEWPORT.y / 2;
+        this.canvas.onclick = (event) => this.onClick(getLocalX(event), getLocalY(event));
         this.canvas.onmousedown = (event) => this.onMouseDown(getLocalX(event), getLocalY(event));
         this.canvas.onmousemove = (event) => this.onMouseMove(getLocalX(event), getLocalY(event));
         this.canvas.onmouseup = () => this.onMouseUp();
@@ -118,6 +119,7 @@ export class Renderer {
         });
     }
 
+    onClick(_x: number, _y: number) {}
     onMouseDown(_x: number, _y: number) {}
     onMouseMove(_x: number, _y: number) {}
     onMouseUp() {}
