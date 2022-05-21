@@ -1,4 +1,6 @@
 import { Vector2 } from "./maths";
+import { NodeSimulation } from "./nodes";
+import { ProjectileSimulation } from "./projectiles";
 import { Node, Projectile } from "./types";
 
 const BACKGROUND = "#0a091a";
@@ -140,3 +142,50 @@ export class Renderer {
     onMouseUp(_x: number, _y: number) {}
     onMouseLeave() {}
 }
+
+export const addInteractivityToRenderer = (
+    renderer: Renderer,
+    nodes: NodeSimulation,
+    projectiles: ProjectileSimulation
+) => {
+    let selection: { node: number; x: number; y: number; moved: boolean } | null = null;
+    renderer.onMouseDown = (x, y, event) => {
+        const { index, node } = nodes.getNodeAtPoint({ x, y });
+
+        if (event.button === 0) {
+            if (node) {
+                selection = { node: index, x: x - node.position.x, y: y - node.position.y, moved: false };
+                renderer.canvas.style.cursor = "grabbing";
+            }
+        } else if (event.button === 2) {
+            if (node) {
+                nodes.removeNode(index);
+                renderer.canvas.style.cursor = "auto";
+            } else {
+                nodes.addNode({ type: "source", position: { x, y }, radius: 20 });
+                renderer.canvas.style.cursor = "pointer";
+            }
+        }
+    };
+    renderer.onMouseUp = (x, y) => {
+        if (selection && !selection.moved) {
+            nodes.flipNodeType(selection.node);
+        }
+
+        selection = null;
+        renderer.canvas.style.cursor = nodes.getNodeAtPoint({ x, y }).node ? "pointer" : "default";
+    };
+    renderer.onMouseLeave = () => {
+        selection = null;
+        renderer.canvas.style.cursor = "pointer";
+    };
+    renderer.onMouseMove = (x, y) => {
+        if (!selection) {
+            renderer.canvas.style.cursor = nodes.getNodeAtPoint({ x, y }).node ? "pointer" : "default";
+            return;
+        }
+
+        selection.moved = true;
+        nodes.moveNode(selection.node, { x: x - selection.x, y: y - selection.y });
+    };
+};
