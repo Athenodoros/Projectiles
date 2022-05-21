@@ -1,5 +1,5 @@
-import { NODE_RADIUS } from "../simulation/constants";
-import { Vector2 } from "../simulation/maths";
+import { Vector2 } from "./maths";
+import { Node, Projectile } from "./types";
 
 const BACKGROUND = "#0a091a";
 const WHITE = "#e0e7ff";
@@ -59,7 +59,7 @@ export class Renderer {
         this.ctx.drawImage(copy_canvas, 0, 0);
     }
 
-    updateCanvasFrame(dt: number, nodes: Vector2[], projectiles: { position: Vector2; previous: Vector2 }[]) {
+    updateCanvasFrame(dt: number, nodes: Node[], projectiles: Projectile[]) {
         // Fade background
         this.ctx.fillStyle = BACKGROUND;
         this.ctx.globalAlpha = 1 - Math.pow(0.01, dt);
@@ -85,14 +85,14 @@ export class Renderer {
         });
 
         this.ctx.lineWidth = 0.5;
-        nodes.forEach((position) => {
+        nodes.forEach((node) => {
             // Background
             this.ctx.fillStyle = BACKGROUND;
             this.ctx.beginPath();
             this.ctx.arc(
-                position.x + this.VIEWPORT.x / 2,
-                position.y + this.VIEWPORT.y / 2,
-                NODE_RADIUS,
+                node.position.x + this.VIEWPORT.x / 2,
+                node.position.y + this.VIEWPORT.y / 2,
+                node.radius,
                 0,
                 2 * Math.PI
             );
@@ -103,16 +103,22 @@ export class Renderer {
 
             // Inner Circle
             this.ctx.beginPath();
-            this.ctx.arc(position.x + this.VIEWPORT.x / 2, position.y + this.VIEWPORT.y / 2, 5, 0, 2 * Math.PI);
+            this.ctx.arc(
+                node.position.x + this.VIEWPORT.x / 2,
+                node.position.y + this.VIEWPORT.y / 2,
+                5,
+                0,
+                2 * Math.PI
+            );
             this.ctx.fill();
             this.ctx.closePath();
 
             // Outer Ring
             this.ctx.beginPath();
             this.ctx.arc(
-                position.x + this.VIEWPORT.x / 2,
-                position.y + this.VIEWPORT.y / 2,
-                NODE_RADIUS,
+                node.position.x + this.VIEWPORT.x / 2,
+                node.position.y + this.VIEWPORT.y / 2,
+                node.radius,
                 0,
                 2 * Math.PI
             );

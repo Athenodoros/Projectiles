@@ -1,27 +1,25 @@
-import { Renderer } from "./rendering";
-import { Simulation } from "./simulation";
-import { NODE_RADIUS } from "./simulation/constants";
-import { distance } from "./simulation/maths";
+import { distance } from "./maths";
+import { ProjectileSimulation } from "./projectiles";
+import { Renderer } from "./renderer";
 import "./style.css";
+import { Node } from "./types";
 
 const renderer = new Renderer();
 
 // Set up simulation
-const simulation = new Simulation(
-    [
-        { position: { x: renderer.VIEWPORT.x * 0.25, y: 0 }, type: "source" },
-        { position: { x: -renderer.VIEWPORT.x * 0.25, y: 0 }, type: "source" },
-        { position: { x: 0, y: -renderer.VIEWPORT.y * 0.25 }, type: "sink" },
-        { position: { x: 0, y: renderer.VIEWPORT.y * 0.25 }, type: "sink" },
-    ],
-    renderer.VIEWPORT
-);
+const nodes: Node[] = [
+    { position: { x: renderer.VIEWPORT.x * 0.25, y: 0 }, type: "source", radius: 20 },
+    { position: { x: -renderer.VIEWPORT.x * 0.25, y: 0 }, type: "source", radius: 20 },
+    { position: { x: 0, y: -renderer.VIEWPORT.y * 0.25 }, type: "sink", radius: 20 },
+    { position: { x: 0, y: renderer.VIEWPORT.y * 0.25 }, type: "sink", radius: 20 },
+];
+const projectiles = new ProjectileSimulation(renderer.VIEWPORT);
 
 // Interactivity
 let selection: { node: number; x: number; y: number; moved: boolean } | null = null;
 const getNodeAtPoint = (x: number, y: number) => {
-    const index = simulation.nodes.findIndex((node) => distance(node.position, { x, y }) < NODE_RADIUS);
-    return index < 0 ? { index: undefined, nodex: undefined } : { index, node: simulation.nodes[index] };
+    const index = nodes.findIndex((node) => distance(node.position, { x, y }) < node.radius);
+    return index < 0 ? { index: undefined, nodex: undefined } : { index, node: nodes[index] };
 };
 renderer.onMouseDown = (x, y, event) => {
     const { index, node } = getNodeAtPoint(x, y);
@@ -33,16 +31,18 @@ renderer.onMouseDown = (x, y, event) => {
         }
     } else if (event.button === 2) {
         if (node) {
-            simulation.removeNode(index);
+            nodes.slice(index, 1);
             renderer.canvas.style.cursor = "auto";
         } else {
-            simulation.createNode(x, y);
+            nodes.push({ type: "source", position: { x, y }, radius: 20 });
             renderer.canvas.style.cursor = "pointer";
         }
     }
 };
 renderer.onMouseUp = (x, y) => {
-    if (selection && !selection.moved) simulation.flipNodePolarity(selection.node);
+    if (selection && !selection.moved) {
+        nodes[selection.node].type = nodes[selection.node].type === "sink" ? "source" : "sink";
+    }
 
     selection = null;
     renderer.canvas.style.cursor = getNodeAtPoint(x, y).node ? "pointer" : "default";
@@ -58,11 +58,11 @@ renderer.onMouseMove = (x, y) => {
     }
 
     selection.moved = true;
-    simulation.updateNodePosition(selection.node, { x: x - selection.x, y: y - selection.y });
+    nodes[selection.node].position = { x: x - selection.x, y: y - selection.y };
 };
 document.onkeydown = (event) => {
     if (event.code === "KeyC") {
-        simulation.projectiles = [];
+        projectiles.list = [];
         renderer.clear();
     }
 };
@@ -78,14 +78,10 @@ const getAnimationFrame = (timestamp: number) => {
     previous = timestamp;
 
     // Run Simulation
-    simulation.update(dt);
+    projectiles.update(dt, nodes);
 
     // Update Display
-    renderer.updateCanvasFrame(
-        dt,
-        simulation.nodes.map(({ position }) => position),
-        simulation.projectiles
-    );
+    renderer.updateCanvasFrame(dt, nodes, projectiles.list);
 
     // Re-Enter Loop
     window.requestAnimationFrame(getAnimationFrame);
@@ -95,4 +91,4 @@ window.requestAnimationFrame(getAnimationFrame);
 
 // Debugging
 (window as any).renderer = renderer;
-(window as any).simulation = simulation;
+(window as any).simulation = projectiles;
