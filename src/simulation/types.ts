@@ -1,6 +1,7 @@
 import { Vector2 } from "./maths";
 
 export interface Node {
+    id: string;
     type: "source" | "sink";
     position: Vector2;
     lapsed?: number;

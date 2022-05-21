@@ -21,3 +21,4 @@ export const unit = ({ x, y }: Vector2) => {
     const length = norm({ x, y });
     return length ? { x: x / length, y: y / length } : ZERO;
 };
+export const distance = (a: Vector2, b: Vector2) => norm(subtract(a, b));

@@ -1,3 +1,4 @@
+import { NODE_RADIUS } from "./constants";
 import { add, getRandomVector2, norm, scale, subtract, unit, Vector2, ZERO } from "./maths";
 import { Node, Projectile, SimulationConfig } from "./types";
 
@@ -18,7 +19,7 @@ export class Simulation {
         };
     }
 
-    public update(dt: number) {
+    update(dt: number) {
         // Spawn new projectiles
         this.nodes.forEach((node) => {
             if (node.type !== "source") return;
@@ -26,7 +27,7 @@ export class Simulation {
 
             while (node.lapsed > this.config.node_period) {
                 this.projectiles.push({
-                    position: add(node.position, getRandomVector2(20)),
+                    position: add(node.position, getRandomVector2(NODE_RADIUS)),
                     velocity: ZERO,
                 });
 
@@ -52,7 +53,7 @@ export class Simulation {
             const update = add(projectile.position, scale(projectile.velocity, dt));
 
             if (
-                this.nodes.some((node) => norm(subtract(node.position, update)) < 20) ||
+                this.nodes.some((node) => norm(subtract(node.position, update)) < NODE_RADIUS) ||
                 Math.abs(update.x) > this.config.bounds.x ||
                 Math.abs(update.y) > this.config.bounds.y
             )
@@ -63,5 +64,15 @@ export class Simulation {
 
         // Removals after the physics loop
         this.projectiles = this.projectiles.filter((_, idx) => !deletions.includes(idx));
+    }
+
+    updateNodePosition(id: string, position: Vector2) {
+        const node = this.nodes.find((node) => node.id === id);
+        if (!node) {
+            console.warn(`Node "${id}" not found`);
+            return;
+        }
+
+        node.position = position;
     }
 }

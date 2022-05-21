@@ -1,3 +1,4 @@
+import { NODE_RADIUS } from "../simulation/constants";
 import { Vector2 } from "../simulation/maths";
 
 const BACKGROUND = "#0a091a";
@@ -21,6 +22,14 @@ export class Renderer {
 
         // Scaling on Window Resize
         window.onresize = () => this.resizeCanvas();
+
+        // Event Handlers
+        const getLocalX = (event: MouseEvent) => event.clientX - this.VIEWPORT.x / 2;
+        const getLocalY = (event: MouseEvent) => event.clientY - this.VIEWPORT.y / 2;
+        this.canvas.onmousedown = (event) => this.onMouseDown(getLocalX(event), getLocalY(event));
+        this.canvas.onmousemove = (event) => this.onMouseMove(getLocalX(event), getLocalY(event));
+        this.canvas.onmouseup = () => this.onMouseUp();
+        this.canvas.onmouseleave = () => this.onMouseLeave();
     }
 
     private updateCanvasSizes() {
@@ -68,7 +77,13 @@ export class Renderer {
 
             // Outer Ring
             this.ctx.beginPath();
-            this.ctx.arc(position.x + this.VIEWPORT.x / 2, position.y + this.VIEWPORT.y / 2, 20, 0, 2 * Math.PI);
+            this.ctx.arc(
+                position.x + this.VIEWPORT.x / 2,
+                position.y + this.VIEWPORT.y / 2,
+                NODE_RADIUS,
+                0,
+                2 * Math.PI
+            );
             this.ctx.stroke();
             this.ctx.closePath();
         });
@@ -79,4 +94,9 @@ export class Renderer {
             this.ctx.closePath();
         });
     }
+
+    onMouseDown(x: number, y: number) {}
+    onMouseMove(x: number, y: number) {}
+    onMouseUp() {}
+    onMouseLeave() {}
 }
