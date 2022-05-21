@@ -26,8 +26,10 @@ export class Simulation {
             node.lapsed = (node.lapsed ?? 0) + dt;
 
             while (node.lapsed > this.config.node_period) {
+                const position = add(node.position, getRandomVector2(NODE_RADIUS));
                 this.projectiles.push({
-                    position: add(node.position, getRandomVector2(NODE_RADIUS)),
+                    position,
+                    previous: position,
                     velocity: ZERO,
                 });
 
@@ -43,23 +45,22 @@ export class Simulation {
                     const difference = subtract(node.position, projectile.position);
                     const strength = this.config.force_constant / Math.pow(norm(difference), 2);
                     const polarity = node.type === "sink" ? 1 : -1;
-                    return scale(unit(difference), Math.min(1000, strength) * polarity);
+                    return scale(unit(difference), strength * polarity);
                 })
                 .reduce(add, ZERO);
 
             const drag = scale(unit(projectile.velocity), -this.config.drag * Math.pow(norm(projectile.velocity), 2));
 
             projectile.velocity = add(projectile.velocity, scale(add(force, drag), dt));
-            const update = add(projectile.position, scale(projectile.velocity, dt));
+            projectile.previous = projectile.position;
+            projectile.position = add(projectile.position, scale(projectile.velocity, dt));
 
             if (
-                this.nodes.some((node) => norm(subtract(node.position, update)) < NODE_RADIUS) ||
-                Math.abs(update.x) > this.config.bounds.x ||
-                Math.abs(update.y) > this.config.bounds.y
+                this.nodes.some((node) => norm(subtract(node.position, projectile.position)) < NODE_RADIUS) ||
+                Math.abs(projectile.position.x) > this.config.bounds.x ||
+                Math.abs(projectile.position.y) > this.config.bounds.y
             )
                 deletions.push(idx);
-
-            projectile.position = update;
         });
 
         // Removals after the physics loop

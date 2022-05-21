@@ -9,6 +9,7 @@ export interface Node {
 
 export interface Projectile {
     position: Vector2;
+    previous: Vector2;
     velocity: Vector2;
 }
 

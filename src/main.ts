@@ -48,7 +48,7 @@ const getAnimationFrame = (timestamp: number) => {
     renderer.updateCanvasFrame(
         dt,
         simulation.nodes.map(({ position }) => position),
-        simulation.projectiles.map(({ position }) => position)
+        simulation.projectiles
     );
 
     // Re-Enter Loop
