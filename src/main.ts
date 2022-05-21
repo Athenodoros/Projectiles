@@ -19,25 +19,43 @@ const simulation = new Simulation(
 
 // Interactivity
 let selection: { node: number; x: number; y: number; moved: boolean } | null = null;
-renderer.onMouseDown = (x, y, event) => {
+const getNodeAtPoint = (x: number, y: number) => {
     const index = simulation.nodes.findIndex((node) => distance(node.position, { x, y }) < NODE_RADIUS);
-    const node = simulation.nodes[index];
+    return index < 0 ? { index: undefined, nodex: undefined } : { index, node: simulation.nodes[index] };
+};
+renderer.onMouseDown = (x, y, event) => {
+    const { index, node } = getNodeAtPoint(x, y);
 
     if (event.button === 0) {
-        if (node) selection = { node: index, x: x - node.position.x, y: y - node.position.y, moved: false };
+        if (node) {
+            selection = { node: index, x: x - node.position.x, y: y - node.position.y, moved: false };
+            renderer.canvas.style.cursor = "grabbing";
+        }
     } else if (event.button === 2) {
-        if (node) simulation.removeNode(index);
-        else simulation.createNode(x, y);
+        if (node) {
+            simulation.removeNode(index);
+            renderer.canvas.style.cursor = "auto";
+        } else {
+            simulation.createNode(x, y);
+            renderer.canvas.style.cursor = "pointer";
+        }
     }
 };
-renderer.onMouseUp = () => {
+renderer.onMouseUp = (x, y) => {
     if (selection && !selection.moved) simulation.flipNodePolarity(selection.node);
 
     selection = null;
+    renderer.canvas.style.cursor = getNodeAtPoint(x, y).node ? "pointer" : "default";
 };
-renderer.onMouseLeave = () => (selection = null);
+renderer.onMouseLeave = () => {
+    selection = null;
+    renderer.canvas.style.cursor = "pointer";
+};
 renderer.onMouseMove = (x, y) => {
-    if (!selection) return;
+    if (!selection) {
+        renderer.canvas.style.cursor = getNodeAtPoint(x, y).node ? "pointer" : "default";
+        return;
+    }
 
     selection.moved = true;
     simulation.updateNodePosition(selection.node, { x: x - selection.x, y: y - selection.y });

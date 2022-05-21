@@ -29,7 +29,7 @@ export class Renderer {
         this.canvas.onclick = (event) => this.onClick(getLocalX(event), getLocalY(event), event);
         this.canvas.onmousedown = (event) => this.onMouseDown(getLocalX(event), getLocalY(event), event);
         this.canvas.onmousemove = (event) => this.onMouseMove(getLocalX(event), getLocalY(event));
-        this.canvas.onmouseup = () => this.onMouseUp();
+        this.canvas.onmouseup = (event) => this.onMouseUp(getLocalX(event), getLocalY(event));
         this.canvas.onmouseleave = () => this.onMouseLeave();
         this.canvas.oncontextmenu = () => false;
     }
@@ -123,6 +123,6 @@ export class Renderer {
     onClick(_x: number, _y: number, _event: MouseEvent) {}
     onMouseDown(_x: number, _y: number, _event: MouseEvent) {}
     onMouseMove(_x: number, _y: number) {}
-    onMouseUp() {}
+    onMouseUp(_x: number, _y: number) {}
     onMouseLeave() {}
 }
