@@ -26,11 +26,12 @@ export class Renderer {
         // Event Handlers
         const getLocalX = (event: MouseEvent) => event.clientX - this.VIEWPORT.x / 2;
         const getLocalY = (event: MouseEvent) => event.clientY - this.VIEWPORT.y / 2;
-        this.canvas.onclick = (event) => this.onClick(getLocalX(event), getLocalY(event));
-        this.canvas.onmousedown = (event) => this.onMouseDown(getLocalX(event), getLocalY(event));
+        this.canvas.onclick = (event) => this.onClick(getLocalX(event), getLocalY(event), event);
+        this.canvas.onmousedown = (event) => this.onMouseDown(getLocalX(event), getLocalY(event), event);
         this.canvas.onmousemove = (event) => this.onMouseMove(getLocalX(event), getLocalY(event));
         this.canvas.onmouseup = () => this.onMouseUp();
         this.canvas.onmouseleave = () => this.onMouseLeave();
+        this.canvas.oncontextmenu = () => false;
     }
 
     private updateCanvasSizes() {
@@ -119,8 +120,8 @@ export class Renderer {
         });
     }
 
-    onClick(_x: number, _y: number) {}
-    onMouseDown(_x: number, _y: number) {}
+    onClick(_x: number, _y: number, _event: MouseEvent) {}
+    onMouseDown(_x: number, _y: number, _event: MouseEvent) {}
     onMouseMove(_x: number, _y: number) {}
     onMouseUp() {}
     onMouseLeave() {}

@@ -77,4 +77,12 @@ export class Simulation {
     flipNodePolarity(index: number) {
         this.nodes[index].type = this.nodes[index].type === "sink" ? "source" : "sink";
     }
+
+    removeNode(index: number) {
+        this.nodes.splice(index, 1);
+    }
+
+    createNode(x: number, y: number) {
+        this.nodes.push({ type: "source", position: { x, y } });
+    }
 }

@@ -19,10 +19,16 @@ const simulation = new Simulation(
 
 // Interactivity
 let selection: { node: number; x: number; y: number; moved: boolean } | null = null;
-renderer.onMouseDown = (x, y) => {
+renderer.onMouseDown = (x, y, event) => {
     const index = simulation.nodes.findIndex((node) => distance(node.position, { x, y }) < NODE_RADIUS);
     const node = simulation.nodes[index];
-    if (node) selection = { node: index, x: x - node.position.x, y: y - node.position.y, moved: false };
+
+    if (event.button === 0) {
+        if (node) selection = { node: index, x: x - node.position.x, y: y - node.position.y, moved: false };
+    } else if (event.button === 2) {
+        if (node) simulation.removeNode(index);
+        else simulation.createNode(x, y);
+    }
 };
 renderer.onMouseUp = () => {
     if (selection && !selection.moved) simulation.flipNodePolarity(selection.node);
