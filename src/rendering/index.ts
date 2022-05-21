@@ -64,11 +64,40 @@ export class Renderer {
         this.ctx.fill();
 
         // Draw components
-        this.ctx.lineWidth = 0.5;
+        this.ctx.globalAlpha = 1;
         this.ctx.fillStyle = WHITE;
         this.ctx.strokeStyle = WHITE;
-        this.ctx.globalAlpha = 1;
+
+        this.ctx.lineWidth = 4;
+        projectiles.forEach(({ position, previous }) => {
+            this.ctx.beginPath();
+            this.ctx.arc(position.x + this.VIEWPORT.x / 2, position.y + this.VIEWPORT.y / 2, 2, 0, 2 * Math.PI);
+            this.ctx.fill();
+            this.ctx.closePath();
+
+            this.ctx.beginPath();
+            this.ctx.moveTo(previous.x + this.VIEWPORT.x / 2, previous.y + this.VIEWPORT.y / 2);
+            this.ctx.lineTo(position.x + this.VIEWPORT.x / 2, position.y + this.VIEWPORT.y / 2);
+            this.ctx.stroke();
+        });
+
+        this.ctx.lineWidth = 0.5;
         nodes.forEach((position) => {
+            // Background
+            this.ctx.fillStyle = BACKGROUND;
+            this.ctx.beginPath();
+            this.ctx.arc(
+                position.x + this.VIEWPORT.x / 2,
+                position.y + this.VIEWPORT.y / 2,
+                NODE_RADIUS,
+                0,
+                2 * Math.PI
+            );
+            this.ctx.fill();
+            this.ctx.closePath();
+
+            this.ctx.fillStyle = WHITE;
+
             // Inner Circle
             this.ctx.beginPath();
             this.ctx.arc(position.x + this.VIEWPORT.x / 2, position.y + this.VIEWPORT.y / 2, 5, 0, 2 * Math.PI);
@@ -86,19 +115,6 @@ export class Renderer {
             );
             this.ctx.stroke();
             this.ctx.closePath();
-        });
-
-        this.ctx.lineWidth = 4;
-        projectiles.forEach(({ position, previous }) => {
-            this.ctx.beginPath();
-            this.ctx.arc(position.x + this.VIEWPORT.x / 2, position.y + this.VIEWPORT.y / 2, 2, 0, 2 * Math.PI);
-            this.ctx.fill();
-            this.ctx.closePath();
-
-            this.ctx.beginPath();
-            this.ctx.moveTo(previous.x + this.VIEWPORT.x / 2, previous.y + this.VIEWPORT.y / 2);
-            this.ctx.lineTo(position.x + this.VIEWPORT.x / 2, position.y + this.VIEWPORT.y / 2);
-            this.ctx.stroke();
         });
     }
 

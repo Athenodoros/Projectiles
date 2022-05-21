@@ -26,7 +26,8 @@ export class Simulation {
             node.lapsed = (node.lapsed ?? 0) + dt;
 
             while (node.lapsed > this.config.node_period) {
-                const position = add(node.position, getRandomVector2(NODE_RADIUS));
+                const distance = NODE_RADIUS * (1 - Math.random() * 0.5 - 0.5);
+                const position = add(node.position, getRandomVector2(distance));
                 this.projectiles.push({
                     position,
                     previous: position,
@@ -56,7 +57,9 @@ export class Simulation {
             projectile.position = add(projectile.position, scale(projectile.velocity, dt));
 
             if (
-                this.nodes.some((node) => norm(subtract(node.position, projectile.position)) < NODE_RADIUS) ||
+                this.nodes.some(
+                    (node) => node.type === "sink" && norm(subtract(node.position, projectile.position)) < NODE_RADIUS
+                ) ||
                 Math.abs(projectile.position.x) > this.config.bounds.x ||
                 Math.abs(projectile.position.y) > this.config.bounds.y
             )
