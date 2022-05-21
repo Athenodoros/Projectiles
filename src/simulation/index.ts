@@ -70,23 +70,11 @@ export class Simulation {
         this.projectiles = this.projectiles.filter((_, idx) => !deletions.includes(idx));
     }
 
-    updateNodePosition(id: string, position: Vector2) {
-        const node = this.nodes.find((node) => node.id === id);
-        if (!node) {
-            console.warn(`Node "${id}" not found`);
-            return;
-        }
-
-        node.position = position;
+    updateNodePosition(index: number, position: Vector2) {
+        this.nodes[index].position = position;
     }
 
-    flipNodePolarity(id: string) {
-        const node = this.nodes.find((node) => node.id === id);
-        if (!node) {
-            console.warn(`Node "${id}" not found`);
-            return;
-        }
-
-        node.type = node.type === "sink" ? "source" : "sink";
+    flipNodePolarity(index: number) {
+        this.nodes[index].type = this.nodes[index].type === "sink" ? "source" : "sink";
     }
 }

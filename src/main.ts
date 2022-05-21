@@ -9,19 +9,20 @@ const renderer = new Renderer();
 // Set up simulation
 const simulation = new Simulation(
     [
-        { id: "source1", position: { x: renderer.VIEWPORT.x * 0.25, y: 0 }, type: "source" },
-        { id: "source2", position: { x: -renderer.VIEWPORT.x * 0.25, y: 0 }, type: "source" },
-        { id: "sink1", position: { x: 0, y: -renderer.VIEWPORT.y * 0.25 }, type: "sink" },
-        { id: "sink2", position: { x: 0, y: renderer.VIEWPORT.y * 0.25 }, type: "sink" },
+        { position: { x: renderer.VIEWPORT.x * 0.25, y: 0 }, type: "source" },
+        { position: { x: -renderer.VIEWPORT.x * 0.25, y: 0 }, type: "source" },
+        { position: { x: 0, y: -renderer.VIEWPORT.y * 0.25 }, type: "sink" },
+        { position: { x: 0, y: renderer.VIEWPORT.y * 0.25 }, type: "sink" },
     ],
     renderer.VIEWPORT
 );
 
 // Interactivity
-let selection: { node: string; x: number; y: number; moved: boolean } | null = null;
+let selection: { node: number; x: number; y: number; moved: boolean } | null = null;
 renderer.onMouseDown = (x, y) => {
-    const node = simulation.nodes.find((node) => distance(node.position, { x, y }) < NODE_RADIUS);
-    if (node) selection = { node: node.id, x: x - node.position.x, y: y - node.position.y, moved: false };
+    const index = simulation.nodes.findIndex((node) => distance(node.position, { x, y }) < NODE_RADIUS);
+    const node = simulation.nodes[index];
+    if (node) selection = { node: index, x: x - node.position.x, y: y - node.position.y, moved: false };
 };
 renderer.onMouseUp = () => {
     if (selection && !selection.moved) simulation.flipNodePolarity(selection.node);
