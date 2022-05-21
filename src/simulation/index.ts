@@ -25,6 +25,7 @@ export class Simulation {
             if (node.type !== "source") return;
             node.lapsed = (node.lapsed ?? 0) + dt;
 
+            if (node.lapsed > 100 * this.config.node_period) node.lapsed = 100 * this.config.node_period;
             while (node.lapsed > this.config.node_period) {
                 const distance = NODE_RADIUS * (1 - Math.random() * 0.5 - 0.5);
                 const position = add(node.position, getRandomVector2(distance));

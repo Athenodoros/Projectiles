@@ -19,6 +19,7 @@ export class Renderer {
         // Set up scaling
         this.dpr = window.devicePixelRatio || 1;
         this.updateCanvasSizes();
+        this.clear();
 
         // Scaling on Window Resize
         window.onresize = () => this.resizeCanvas();
@@ -118,6 +119,13 @@ export class Renderer {
             this.ctx.stroke();
             this.ctx.closePath();
         });
+    }
+
+    clear() {
+        this.ctx.fillStyle = BACKGROUND;
+        this.ctx.globalAlpha = 1;
+        this.ctx.rect(0, 0, this.VIEWPORT.x, this.VIEWPORT.y);
+        this.ctx.fill();
     }
 
     onClick(_x: number, _y: number, _event: MouseEvent) {}

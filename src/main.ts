@@ -60,6 +60,12 @@ renderer.onMouseMove = (x, y) => {
     selection.moved = true;
     simulation.updateNodePosition(selection.node, { x: x - selection.x, y: y - selection.y });
 };
+document.onkeydown = (event) => {
+    if (event.code === "KeyC") {
+        simulation.projectiles = [];
+        renderer.clear();
+    }
+};
 
 // Display Loop
 let previous = -1;
