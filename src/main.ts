@@ -1,6 +1,6 @@
 import { NodeSimulation, Simulations } from "./nodes";
 import { ProjectileSimulation } from "./projectiles";
-import { addInteractivityToRenderer, Renderer } from "./renderer";
+import { addListenersToRenderer, Renderer } from "./renderer";
 import "./style.css";
 
 const renderer = new Renderer();
@@ -11,24 +11,23 @@ let nodes: NodeSimulation = new Simulations[nodeSimulationIndex](renderer.VIEWPO
 const projectiles = new ProjectileSimulation(renderer.VIEWPORT);
 
 // Interactivity
-addInteractivityToRenderer(renderer, nodes);
+addListenersToRenderer(renderer, nodes);
+const clearProjectileView = () => {
+    projectiles.list = [];
+    renderer.clear();
+};
+const updateNodeSimulation = (index: number) => {
+    nodeSimulationIndex = index;
+    nodes = new Simulations[index](renderer.VIEWPORT);
+    addListenersToRenderer(renderer, nodes);
+    clearProjectileView();
+};
 document.onkeydown = (event) => {
-    if (event.code === "KeyC") {
-        projectiles.list = [];
-        renderer.clear();
-    }
-    if (event.code === "ArrowRight") {
-        nodeSimulationIndex = Math.min(Simulations.length, nodeSimulationIndex + 1);
-        nodes = new Simulations[nodeSimulationIndex](renderer.VIEWPORT);
-        projectiles.list = [];
-        renderer.clear();
-    }
-    if (event.code === "ArrowLeft") {
-        nodeSimulationIndex = Math.max(0, nodeSimulationIndex - 1);
-        nodes = new Simulations[nodeSimulationIndex](renderer.VIEWPORT);
-        projectiles.list = [];
-        renderer.clear();
-    }
+    if (event.code === "KeyC") clearProjectileView();
+    if (event.code === "ArrowRight" && nodeSimulationIndex < Simulations.length - 1)
+        updateNodeSimulation(nodeSimulationIndex + 1);
+
+    if (event.code === "ArrowLeft" && nodeSimulationIndex > 0) updateNodeSimulation(nodeSimulationIndex - 1);
 };
 
 // Display Loop

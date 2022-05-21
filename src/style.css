@@ -13,7 +13,10 @@ body {
 #app {
     width: 100%;
     height: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    display: grid;
+}
+
+#app canvas {
+    grid-row: 1;
+    grid-column: 1;
 }
