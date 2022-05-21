@@ -99,8 +99,8 @@ export class MovingOscillatorSimulation extends NodeSimulation {
     bounds: Vector2;
 
     constructor(bounds: Vector2) {
-        const left: Node = { position: { x: -bounds.x * 0.2, y: 0 }, type: "sink", radius: 20 };
-        const right: Node = { position: { x: bounds.x * 0.2, y: 0 }, type: "sink", radius: 20 };
+        const left: Node = { position: { x: -bounds.x * 0.15, y: 0 }, type: "sink", radius: 20 };
+        const right: Node = { position: { x: bounds.x * 0.15, y: 0 }, type: "sink", radius: 20 };
 
         super([left, right, { position: { x: 0, y: 0 }, type: "source", radius: 20 }]);
 
@@ -115,8 +115,8 @@ export class MovingOscillatorSimulation extends NodeSimulation {
         this.time += dt;
         this.sinks.forEach(([position, node]) => {
             node.position = {
-                x: this.bounds.x * 0.2 * (position === "left" ? -1 : 1),
-                y: this.bounds.y * 0.2 * Math.sin(this.time * 1.5 * (position === "left" ? -1 : 1)),
+                x: this.bounds.x * 0.15 * (position === "left" ? -1 : 1),
+                y: this.bounds.y * 0.25 * Math.sin(this.time * 1.5 * (position === "left" ? -1 : 1)),
             };
         });
     }

@@ -11,7 +11,7 @@ let nodes: NodeSimulation = new Simulations[nodeSimulationIndex](renderer.VIEWPO
 const projectiles = new ProjectileSimulation(renderer.VIEWPORT);
 
 // Interactivity
-addInteractivityToRenderer(renderer, nodes, projectiles);
+addInteractivityToRenderer(renderer, nodes);
 document.onkeydown = (event) => {
     if (event.code === "KeyC") {
         projectiles.list = [];
