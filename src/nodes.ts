@@ -31,21 +31,25 @@ export abstract class NodeSimulation {
 export class BaseSimulation extends NodeSimulation {
     constructor(bounds: Vector2) {
         super([
-            { position: { x: bounds.x * 0.25, y: 0 }, type: "source", radius: 20 },
-            { position: { x: -bounds.x * 0.25, y: 0 }, type: "source", radius: 20 },
-            { position: { x: 0, y: -bounds.y * 0.25 }, type: "sink", radius: 20 },
-            { position: { x: 0, y: bounds.y * 0.25 }, type: "sink", radius: 20 },
+            { position: { x: bounds.x * 0.25, y: 0 }, type: "source", radius: 15 },
+            { position: { x: -bounds.x * 0.25, y: 0 }, type: "source", radius: 15 },
+            { position: { x: 0, y: -bounds.y * 0.25 }, type: "sink", radius: 15 },
+            { position: { x: 0, y: bounds.y * 0.25 }, type: "sink", radius: 15 },
         ]);
     }
 }
 
 export class BalanceSimulation extends NodeSimulation {
-    constructor(bounds: Vector2) {
+    constructor(_bounds: Vector2) {
+        const dimension = 200;
+
         super([
-            { position: { x: bounds.x * 0.1, y: 0 }, type: "sink", radius: 20 },
-            { position: { x: -bounds.x * 0.1, y: 0 }, type: "sink", radius: 20 },
-            { position: { x: bounds.x * 0.05, y: 0 }, type: "source", radius: 20 },
-            { position: { x: -bounds.x * 0.05, y: 0 }, type: "source", radius: 20 },
+            { position: { x: dimension, y: 0 }, type: "sink", radius: 20 },
+            { position: { x: -dimension, y: 0 }, type: "sink", radius: 20 },
+            { position: { x: 0, y: dimension }, type: "sink", radius: 20 },
+            { position: { x: 0, y: -dimension }, type: "sink", radius: 20 },
+            { position: { x: 0, y: 18 }, type: "source", radius: 15 },
+            { position: { x: 0, y: -18 }, type: "source", radius: 15 },
         ]);
     }
 }
@@ -64,7 +68,7 @@ export class MovingTriangleSimulation extends NodeSimulation {
                 y: dimension * Math.cos(((Math.PI * 2) / 3) * i),
             },
             type: "source",
-            radius: 20,
+            radius: 15,
         }));
 
         super([...sources, { position: { x: 0, y: 0 }, type: "sink", radius: 20 }]);
@@ -99,8 +103,8 @@ export class MovingOscillatorSimulation extends NodeSimulation {
     bounds: Vector2;
 
     constructor(bounds: Vector2) {
-        const left: Node = { position: { x: -bounds.x * 0.15, y: 0 }, type: "sink", radius: 20 };
-        const right: Node = { position: { x: bounds.x * 0.15, y: 0 }, type: "sink", radius: 20 };
+        const left: Node = { position: { x: -bounds.x * 0.15, y: 0 }, type: "sink", radius: 15 };
+        const right: Node = { position: { x: bounds.x * 0.15, y: 0 }, type: "sink", radius: 15 };
 
         super([left, right, { position: { x: 0, y: 0 }, type: "source", radius: 20 }]);
 
