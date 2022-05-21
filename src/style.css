@@ -16,7 +16,48 @@ body {
     display: grid;
 }
 
-#app canvas {
+#app > * {
     grid-row: 1;
     grid-column: 1;
+}
+
+#popup {
+    height: 350px;
+    width: 270px;
+    background-color: #0f172a;
+    border: 1px solid #1e293b;
+    justify-self: center;
+    align-self: center;
+    border-radius: 15px;
+    color: #cbd5e1;
+    padding: 40px;
+    font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue",
+        Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+}
+
+#backdrop {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+h3,
+ul {
+    margin-bottom: 32px;
+}
+
+p {
+    font-size: 14px;
+}
+
+li {
+    font-size: 14px;
+    margin-bottom: 8px;
+}
+
+code {
+    background-color: #475569;
+    padding: 1px 3px;
+    border-radius: 2px;
+    border: 1px solid #64748b;
 }

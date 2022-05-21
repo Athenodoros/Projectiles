@@ -11,41 +11,47 @@ let nodes: NodeSimulation = new Simulations[nodeSimulationIndex](renderer.VIEWPO
 const projectiles = new ProjectileSimulation(renderer.VIEWPORT);
 
 // Interactivity
+let paused = true;
 addListenersToRenderer(renderer, nodes);
-const clearProjectileView = () => {
-    projectiles.list = [];
-    renderer.clear();
-};
+const popup = document.getElementById("backdrop")!;
+const clearProjectileView = () => ((projectiles.list = []), renderer.clear());
 const updateNodeSimulation = (index: number) => {
     nodeSimulationIndex = index;
     nodes = new Simulations[index](renderer.VIEWPORT);
+    renderer.updateCanvasFrame(0, nodes.list, projectiles.list);
     addListenersToRenderer(renderer, nodes);
     clearProjectileView();
 };
 document.onkeydown = (event) => {
+    if (event.code === "Space") {
+        paused = !paused;
+        popup.style.display = paused ? "inherit" : "none";
+    }
     if (event.code === "KeyC") clearProjectileView();
+
     if (event.code === "ArrowRight" && nodeSimulationIndex < Simulations.length - 1)
         updateNodeSimulation(nodeSimulationIndex + 1);
-
     if (event.code === "ArrowLeft" && nodeSimulationIndex > 0) updateNodeSimulation(nodeSimulationIndex - 1);
 };
 
 // Display Loop
 let previous = -1;
+renderer.updateCanvasFrame(0, nodes.list, projectiles.list);
 const getAnimationFrame = (timestamp: number) => {
     // Update Time-Tracking
-    if (previous < 0) {
-        previous = timestamp;
-    }
+    if (previous < 0) previous = timestamp;
+
     const dt = (timestamp - previous) / 1000;
     previous = timestamp;
 
-    // Run Simulation
-    nodes.update(dt);
-    projectiles.update(dt, nodes.list);
+    if (!paused) {
+        // Run Simulation
+        nodes.update(dt);
+        projectiles.update(dt, nodes.list);
 
-    // Update Display
-    renderer.updateCanvasFrame(dt, nodes.list, projectiles.list);
+        // Update Display
+        renderer.updateCanvasFrame(dt, nodes.list, projectiles.list);
+    }
 
     // Re-Enter Loop
     window.requestAnimationFrame(getAnimationFrame);

@@ -2,14 +2,26 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+    <link rel="icon" type="image/svg+xml" href="favicon.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Vite App</title>
+    <title>Projectiles</title>
   </head>
   <body>
     <div id="app">
       <canvas id="projectile-canvas"></canvas>
       <canvas id="node-canvas"></canvas>
+      <div id="backdrop">
+        <div id="popup">
+          <h3>Welcome to a doodle!</h3>
+          <p>This is a silly web app, which hopefully looks interesting. These are some useful hotkeys:</p>
+          <ul>
+            <li><code>C</code>: Reset projectiles</li>
+            <li><code>Space</code>: Open or close this popup</li>
+            <li><code>Left</code> / <code>Right</code>: Change presets</li>
+          </ul>
+          <p>You can also drag and drop the main nodes, click them to change the polarity, or right click to create and delete nodes.</p>
+        </div>
+      </div>
     </div>
     <script type="module" src="/src/main.ts"></script>
   </body>
