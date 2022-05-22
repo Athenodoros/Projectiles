@@ -14,6 +14,10 @@ const projectiles = new ProjectileSimulation(renderer.VIEWPORT);
 let paused = true;
 addListenersToRenderer(renderer, nodes);
 const popup = document.getElementById("backdrop")!;
+popup.onclick = () => {
+    paused = false;
+    popup.style.display = "none";
+};
 const clearProjectileView = () => ((projectiles.list = []), renderer.clear());
 const updateNodeSimulation = (index: number) => {
     nodeSimulationIndex = index;
