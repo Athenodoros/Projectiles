@@ -40,7 +40,6 @@ document.onkeydown = (event) => {
 
 // Display Loop
 let previous = -1;
-renderer.updateCanvasFrame(0, nodes.list, projectiles.list);
 const getAnimationFrame = (timestamp: number) => {
     // Update Time-Tracking
     if (previous < 0) previous = timestamp;
