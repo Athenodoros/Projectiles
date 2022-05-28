@@ -12,7 +12,7 @@ export abstract class NodeSimulation {
 
     getNodeAtPoint(point: Vector2) {
         const index = this.list.findIndex((node) => distance(node.position, point) < node.radius);
-        return index < 0 ? { index: undefined, nodex: undefined } : { index, node: this.list[index] };
+        return index < 0 ? { index: undefined, node: undefined } : { index, node: this.list[index] };
     }
     addNode(node: Node) {
         this.list.push(node);

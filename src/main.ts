@@ -1,6 +1,7 @@
+import { setInteractivityListeners } from "./interactivity";
 import { NodeSimulation, Simulations } from "./nodes";
 import { ProjectileSimulation } from "./projectiles";
-import { addListenersToRenderer, Renderer } from "./renderer";
+import { Renderer } from "./renderer";
 import "./style.css";
 
 const renderer = new Renderer();
@@ -10,33 +11,26 @@ let nodeSimulationIndex = 0;
 let nodes: NodeSimulation = new Simulations[nodeSimulationIndex](renderer.VIEWPORT);
 const projectiles = new ProjectileSimulation(renderer.VIEWPORT);
 
-// Interactivity
+// Pause State
 let paused = true;
-addListenersToRenderer(renderer, nodes);
-const popup = document.getElementById("backdrop")!;
-popup.onclick = () => {
-    paused = false;
-    popup.style.display = "none";
-};
-const clearProjectileView = () => ((projectiles.list = []), renderer.clear());
-const updateNodeSimulation = (index: number) => {
+const togglePauseState = () => (paused = !paused);
+const getPauseState = () => paused;
+
+// Interactivity
+const changeNodeSimulation = (index: number) => {
     nodeSimulationIndex = index;
     nodes = new Simulations[index](renderer.VIEWPORT);
     renderer.updateCanvasFrame(0, nodes.list, projectiles.list);
-    addListenersToRenderer(renderer, nodes);
+    setInteractivityListeners(renderer, nodes, getPauseState, togglePauseState, changeStageNumber, clearProjectileView);
     clearProjectileView();
 };
-document.onkeydown = (event) => {
-    if (event.code === "Space") {
-        paused = !paused;
-        popup.style.display = paused ? "inherit" : "none";
-    }
-    if (event.code === "KeyC") clearProjectileView();
-
-    if (event.code === "ArrowRight" && nodeSimulationIndex < Simulations.length - 1)
-        updateNodeSimulation(nodeSimulationIndex + 1);
-    if (event.code === "ArrowLeft" && nodeSimulationIndex > 0) updateNodeSimulation(nodeSimulationIndex - 1);
+const changeStageNumber = (type: "increase" | "decrease") => {
+    if (type === "increase" && nodeSimulationIndex < Simulations.length - 1)
+        changeNodeSimulation(nodeSimulationIndex + 1);
+    if (type === "decrease" && nodeSimulationIndex > 0) changeNodeSimulation(nodeSimulationIndex - 1);
 };
+const clearProjectileView = () => ((projectiles.list = []), renderer.clear());
+setInteractivityListeners(renderer, nodes, getPauseState, togglePauseState, changeStageNumber, clearProjectileView);
 
 // Display Loop
 let previous = -1;

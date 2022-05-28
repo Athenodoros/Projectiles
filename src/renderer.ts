@@ -1,5 +1,4 @@
 import { Vector2 } from "./maths";
-import { NodeSimulation } from "./nodes";
 import { Node, Projectile } from "./types";
 
 const BACKGROUND = "#0a091a";
@@ -31,14 +30,22 @@ export class Renderer {
         window.onresize = () => this.resizeCanvas();
 
         // Event Handlers
-        const getLocalX = (event: MouseEvent) => event.clientX - this.VIEWPORT.x / 2;
-        const getLocalY = (event: MouseEvent) => event.clientY - this.VIEWPORT.y / 2;
-        this.nodeCanvas.onclick = (event) => this.onClick(getLocalX(event), getLocalY(event), event);
-        this.nodeCanvas.onmousedown = (event) => this.onMouseDown(getLocalX(event), getLocalY(event), event);
-        this.nodeCanvas.onmousemove = (event) => this.onMouseMove(getLocalX(event), getLocalY(event));
-        this.nodeCanvas.onmouseup = (event) => this.onMouseUp(getLocalX(event), getLocalY(event));
+        const getLocalPosition = (event: MouseEvent) => ({
+            x: event.clientX - this.VIEWPORT.x / 2,
+            y: event.clientY - this.VIEWPORT.y / 2,
+        });
+        const handleTouchesChange = (event: TouchEvent) => {
+            event.preventDefault();
+            this.onTouchesChange(getLocalTouchArray(event.targetTouches, this.VIEWPORT));
+        };
+        this.nodeCanvas.onmousedown = (event) => this.onMouseDown(getLocalPosition(event), event);
+        this.nodeCanvas.onmousemove = (event) => this.onMouseMove(getLocalPosition(event));
+        this.nodeCanvas.onmouseup = (event) => this.onMouseUp(getLocalPosition(event));
         this.nodeCanvas.onmouseleave = () => this.onMouseLeave();
         this.nodeCanvas.oncontextmenu = () => false;
+        this.nodeCanvas.ontouchstart = handleTouchesChange;
+        this.nodeCanvas.ontouchmove = handleTouchesChange;
+        this.nodeCanvas.ontouchend = handleTouchesChange;
     }
 
     private updateCanvasSizes() {
@@ -144,12 +151,29 @@ export class Renderer {
         this.projectileCtx.fill();
     }
 
-    onClick(_x: number, _y: number, _event: MouseEvent) {}
-    onMouseDown(_x: number, _y: number, _event: MouseEvent) {}
-    onMouseMove(_x: number, _y: number) {}
-    onMouseUp(_x: number, _y: number) {}
+    onMouseDown(_position: Vector2, _event: MouseEvent) {}
+    onMouseMove(_position: Vector2) {}
+    onMouseUp(_position: Vector2) {}
     onMouseLeave() {}
+    onTouchesChange(_descriptions: TouchDescription[]) {}
 }
+
+export interface TouchDescription {
+    id: number;
+    x: number;
+    y: number;
+}
+const getLocalTouchArray = (touches: TouchList, viewport: Vector2) => {
+    const result: TouchDescription[] = [];
+    for (let i = 0; i < touches.length; i++) {
+        result.push({
+            id: touches[i].identifier,
+            x: touches[i].clientX - viewport.x / 2,
+            y: touches[i].clientY - viewport.y / 2,
+        });
+    }
+    return result;
+};
 
 const scaleCanvas = (canvas: HTMLCanvasElement, viewport: Vector2, dpr: number) => {
     canvas.width = viewport.x * dpr;
@@ -165,47 +189,4 @@ const getCanvasCopy = (canvas: HTMLCanvasElement, dpr: number) => {
     copy_ctx.scale(1 / dpr, 1 / dpr);
     copy_ctx.drawImage(canvas, 0, 0);
     return copy_canvas;
-};
-
-let selection: { node: number; x: number; y: number; moved: boolean } | null = null;
-export const addListenersToRenderer = (renderer: Renderer, nodes: NodeSimulation) => {
-    renderer.onMouseDown = (x, y, event) => {
-        const { index, node } = nodes.getNodeAtPoint({ x, y });
-
-        if (event.button === 0) {
-            if (node) {
-                selection = { node: index, x: x - node.position.x, y: y - node.position.y, moved: false };
-                renderer.nodeCanvas.style.cursor = "grabbing";
-            }
-        } else if (event.button === 2) {
-            if (node) {
-                nodes.removeNode(index);
-                renderer.nodeCanvas.style.cursor = "auto";
-            } else {
-                nodes.addNode({ type: "source", position: { x, y }, radius: 20 });
-                renderer.nodeCanvas.style.cursor = "pointer";
-            }
-        }
-    };
-    renderer.onMouseUp = (x, y) => {
-        if (selection && !selection.moved) {
-            nodes.flipNodeType(selection.node);
-        }
-
-        selection = null;
-        renderer.nodeCanvas.style.cursor = nodes.getNodeAtPoint({ x, y }).node ? "pointer" : "default";
-    };
-    renderer.onMouseLeave = () => {
-        selection = null;
-        renderer.nodeCanvas.style.cursor = "pointer";
-    };
-    renderer.onMouseMove = (x, y) => {
-        if (!selection) {
-            renderer.nodeCanvas.style.cursor = nodes.getNodeAtPoint({ x, y }).node ? "pointer" : "default";
-            return;
-        }
-
-        selection.moved = true;
-        nodes.moveNode(selection.node, { x: x - selection.x, y: y - selection.y });
-    };
 };
