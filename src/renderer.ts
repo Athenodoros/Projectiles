@@ -71,9 +71,11 @@ export class Renderer {
     }
 
     updateCanvasFrame(dt: number, nodes: Node[], projectiles: Projectile[]) {
+        const alpha = 1 - Math.pow(0.01, dt);
+
         // Fade background
         this.projectileCtx.fillStyle = BACKGROUND;
-        this.projectileCtx.globalAlpha = 1 - Math.pow(0.01, dt);
+        this.projectileCtx.globalAlpha = alpha;
         this.projectileCtx.rect(0, 0, this.VIEWPORT.x, this.VIEWPORT.y);
         this.projectileCtx.fill();
 
@@ -98,6 +100,17 @@ export class Renderer {
             this.projectileCtx.beginPath();
             this.projectileCtx.moveTo(previous.x + this.VIEWPORT.x / 2, previous.y + this.VIEWPORT.y / 2);
             this.projectileCtx.lineTo(position.x + this.VIEWPORT.x / 2, position.y + this.VIEWPORT.y / 2);
+
+            const gradient = this.projectileCtx.createLinearGradient(
+                previous.x + this.VIEWPORT.x / 2,
+                previous.y + this.VIEWPORT.y / 2,
+                position.x + this.VIEWPORT.x / 2,
+                position.y + this.VIEWPORT.y / 2
+            );
+            gradient.addColorStop(1, WHITE);
+            gradient.addColorStop(0, interpolateColours(WHITE, BACKGROUND, alpha));
+            this.projectileCtx.strokeStyle = gradient;
+
             this.projectileCtx.stroke();
         });
 
@@ -189,4 +202,20 @@ const getCanvasCopy = (canvas: HTMLCanvasElement, dpr: number) => {
     copy_ctx.scale(1 / dpr, 1 / dpr);
     copy_ctx.drawImage(canvas, 0, 0);
     return copy_canvas;
+};
+
+const interpolateColours = (from: string, to: string, transparency: number) => {
+    const [r1, g1, b1] = parseRGB(from);
+    const [r2, g2, b2] = parseRGB(to);
+    return (
+        "#" +
+        Math.round(r2 * transparency + r1 * (1 - transparency)).toString(16) +
+        Math.round(g2 * transparency + g1 * (1 - transparency)).toString(16) +
+        Math.round(b2 * transparency + b1 * (1 - transparency)).toString(16)
+    );
+};
+
+const parseRGB = (colour: string) => {
+    const [_, a, b, c, d, e, f] = colour;
+    return [parseInt(a + b, 16), parseInt(c + d, 16), parseInt(e + f, 16)] as [number, number, number];
 };
